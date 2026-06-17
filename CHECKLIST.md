@@ -4,7 +4,7 @@
 
 ---
 
-## 📦 Phase 0 — Préparation & base de données
+## 📦 Phase 0 — Préparation & base de données 
 
 - [ ] **[A]** Créer la base PostgreSQL `ecole` et exécuter `ScriptSQL/schema_ecole_v2.sql`
 - [ ] **[A]** Configurer `application.properties` : datasource PostgreSQL, `ddl-auto: validate`, Thymeleaf
@@ -13,7 +13,7 @@
 
 ---
 
-## 🔐 Phase 1 — Authentification (Spring Security)
+## 🔐 Phase 1 — Authentification (Spring Security) (Dix)
 
 - [ ] **[A]** Créer l'entité `User` mappée sur `users` (id, email, password, is_active, last_login)
 - [ ] **[A]** Créer les entités `Role` et `UserRole` avec la relation ManyToMany
@@ -33,7 +33,7 @@
 
 ---
 
-## 👨‍🎓 Phase 2 — Module Secrétariat : Élèves
+## 👨‍🎓 Phase 2 — Module Secrétariat : Élèves (Tsinjo)
 
 - [ ] **[A]** Créer l'entité JPA `ProfilEtudiant` mappée sur `profils_etudiants`
 - [ ] **[A]** Créer l'entité `Inscription` avec ses relations (étudiant, classe, année scolaire)
@@ -48,7 +48,7 @@
 
 ---
 
-## 💰 Phase 3 — Module Secrétariat : Paiements
+## 💰 Phase 3 — Module Secrétariat : Paiements (Tiavina)
 
 - [ ] **[A]** Créer les entités JPA : `GrilleTarifaire`, `Echeancier`, `Echeance`, `Paiement`
 - [ ] **[A]** Créer `PaiementRepository` : paiements par inscription, échéances non soldées, total encaissé
@@ -61,7 +61,7 @@
 
 ---
 
-## 🎨 Phase 4 — Interface & sécurité transversale
+## 🎨 Phase 4 — Interface & sécurité transversale (Tiavina)
 
 - [ ] **[A]** Vérifier la protection CSRF sur tous les formulaires POST (activée par défaut dans Spring Security)
 - [ ] **[B]** Ajouter la validation côté serveur sur les DTOs des formulaires (`@NotNull`, `@Size`, `@Email`)
