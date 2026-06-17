@@ -1,0 +1,8 @@
+com/ecole/controller/SecretaireController.class
+com/ecole/controller/ProfesseurController.class
+com/ecole/controller/CommunsController.class
+com/ecole/controller/DirecteurController.class
+com/ecole/EcoleApplication.class
+com/ecole/controller/EtudiantController.class
+com/ecole/controller/HomeController.class
+com/ecole/controller/FragmentController.class
