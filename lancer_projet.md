@@ -50,12 +50,10 @@
    ```bash
    cd Front-ecole
    ```
-
 2. **Lancer le serveur HTTP de développement :**
    ```bash
    python -m http.server 8080
    ```
-
    Le frontend sera accessible sur `http://localhost:8080/pages/layouts/model.html`
 
 ## Accéder à l'Application
