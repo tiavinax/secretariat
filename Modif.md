@@ -1,0 +1,7 @@
+- entity (Secretaire)
+- repository (Secretaire)
+- service (Secretaire)
+- ScriptSQL (Secretaire)
+- ressource/templates (Secretaire)
+- templates (index.html)
+- pom.xml (dependecie : security + thymleaf)

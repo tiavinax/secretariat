@@ -13,24 +13,43 @@
 
 ---
 
-## 🔐 Phase 1 — Authentification (Spring Security) (Dix)
+##  Phase 1 — Authentification (Spring Security) (Dix)
 
-- [ ] **[A]** Créer l'entité `User` mappée sur `users` (id, email, password, is_active, last_login)
-- [ ] **[A]** Créer les entités `Role` et `UserRole` avec la relation ManyToMany
-- [ ] **[A]** Créer `UserRepository` avec `findByEmail()`
-- [ ] **[B]** Implémenter `CustomUserDetailsService` : charger user + rôles depuis la BDD
-- [ ] **[B]** Configurer `SecurityConfig` : BCryptPasswordEncoder, formLogin, logout, règles d'accès par rôle
+- [ok] **[A]** Créer l'entité `User` mappée sur `users` (id, email, password, is_active, last_login)
+- [ok] **[A]** Créer les entités `Role` et `UserRole` avec la relation ManyToMany
+- [ok] **[A]** Créer `UserRepository` avec `findByEmail()`
+- [ok] **[B]** Implémenter `CustomUserDetailsService` : charger user + rôles depuis la BDD
+- [ok] **[B]** Configurer `SecurityConfig` : BCryptPasswordEncoder, formLogin, logout, règles d'accès par rôle
   - ex : `/secretariat/**` → `ROLE_SECRETARIAT`, `/directeur/**` → `ROLE_DIRECTEUR`
-- [ ] **[B]** Implémenter `AuthSuccessHandler` : redirection post-login selon le rôle
+- [ok] **[B]** Implémenter `AuthSuccessHandler` : redirection post-login selon le rôle
   - directeur → `/directeur/dashboard`
   - secrétaire → `/secretariat/eleves`
   - professeur → `/professeur/notes`
   - étudiant → `/etudiant/bulletin`
-- [ ] **[B]** Mettre à jour `last_login` en BDD à chaque connexion réussie
-- [ ] **[C]** Brancher la page `index.html` (login) sur Spring Security avec affichage des erreurs
-- [ ] **[C]** Compléter `error.html` pour les erreurs 403 (accès refusé) et 404
-- [ ] **[C]** Tester la connexion pour chaque rôle et vérifier les redirections
+- [ok] **[B]** Mettre à jour `last_login` en BDD à chaque connexion réussie
+- [ok] **[C]** Brancher la page `index.html` (login) sur Spring Security avec affichage des erreurs
+- [ok] **[C]** Compléter `error.html` pour les erreurs 403 (accès refusé) et 404
+- [ok] **[C]** Tester la connexion pour chaque rôle et vérifier les redirections
 
+[Login: rakoto@ecole.mg]
+        ↓
+[UserDetailsService]
+  → SELECT user WHERE email = ?
+  → SELECT roles WHERE user_id = ?
+  → retourne : [ROLE_PROFESSEUR, ROLE_PARENT]
+        ↓
+[Spring Security stocke les 2 rôles en session]
+        ↓
+[AuthSuccessHandler]
+  → a ROLE_DIRECTEUR ?    NON
+  → a ROLE_SECRETARIAT ?  NON
+  → a ROLE_PROFESSEUR ?   OUI → redirect /professeur/notes
+        ↓
+[Navigation libre]
+  /professeur/notes   ✅ (a ROLE_PROFESSEUR)
+  /parent/suivi       ✅ (a ROLE_PARENT)
+  /secretariat/eleves ❌ 403 Forbidden
+  /directeur/dashboard ❌ 403 Forbidden
 ---
 
 ## 👨‍🎓 Phase 2 — Module Secrétariat : Élèves (Tsinjo)
@@ -48,7 +67,7 @@
 
 ---
 
-## 💰 Phase 3 — Module Secrétariat : Paiements (Tiavina)
+## Phase 3 — Module Secrétariat : Paiements (Tiavina)
 
 - [ ] **[A]** Créer les entités JPA : `GrilleTarifaire`, `Echeancier`, `Echeance`, `Paiement`
 - [ ] **[A]** Créer `PaiementRepository` : paiements par inscription, échéances non soldées, total encaissé

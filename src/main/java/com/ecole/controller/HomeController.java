@@ -6,13 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
+    @GetMapping("/login")
+    public String login() {
+        return "index"; 
+    }
+
     @GetMapping("/")
     public String index() {
-        return "redirect:/directeur/dashboard";  // Rediriger vers le dashboard directeur par défaut
+        return "redirect:/login";
     }
 
     @GetMapping("/error")
     public String error() {
-        return "error";  // Va chercher templates/error.html
+        return "error";
     }
 }
