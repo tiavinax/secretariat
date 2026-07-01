@@ -17,6 +17,9 @@ public interface PaiementRepository extends JpaRepository<Paiement, Integer>,
     List<Paiement> findByInscription(Inscription inscription);
     List<Paiement> findByEcheance(Echeance echeance);
 
+    // Toutes les lignes d'un même groupe de paiement
+    List<Paiement> findByReferenceTransaction(String referenceTransaction);
+
     @Query("SELECT COALESCE(SUM(p.montant), 0) FROM Paiement p WHERE p.inscription = :inscription")
     BigDecimal totalEncaisseParInscription(Inscription inscription);
 }

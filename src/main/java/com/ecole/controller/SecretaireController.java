@@ -8,9 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.ecole.dto.Secretaire.BilanGlobalDTO;
+import com.ecole.dto.Secretaire.PaiementGroupeDTO;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.time.LocalDate;
@@ -40,24 +43,72 @@ public class SecretaireController {
     }
 
     // Enregistrement du paiement
+    // Modifier le POST paiement
     @PostMapping("/secretariat/paiement")
     public String enregistrerPaiement(
             @RequestParam Integer inscriptionId,
             @RequestParam Integer echeanceId,
-            @RequestParam BigDecimal montant,
-            @RequestParam String modePaiement,
-            @RequestParam(required = false) String notes,
+            @RequestParam List<BigDecimal> montants,
+            @RequestParam List<String> modesPaiement,
             RedirectAttributes redirectAttributes) {
 
         try {
-            paiementService.enregistrerPaiement(
-                    inscriptionId, echeanceId, montant, modePaiement, notes);
-            redirectAttributes.addFlashAttribute("success", "Paiement enregistré avec succès !");
+            // Construire le DTO
+            PaiementGroupeDTO dto = new PaiementGroupeDTO();
+            dto.setInscriptionId(inscriptionId);
+            dto.setEcheanceId(echeanceId);
+
+            List<PaiementGroupeDTO.LignePaiement> lignes = new ArrayList<>();
+            for (int i = 0; i < montants.size(); i++) {
+                PaiementGroupeDTO.LignePaiement ligne = new PaiementGroupeDTO.LignePaiement();
+                ligne.setMontant(montants.get(i));
+                ligne.setModePaiement(modesPaiement.get(i));
+                lignes.add(ligne);
+            }
+            dto.setLignes(lignes);
+
+            String refGroupe = paiementService.enregistrerPaiementGroupe(dto);
+            return "redirect:/secretariat/paiements/groupe/" + refGroupe + "/facture";
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+            return "redirect:/secretariat/paiement";
         }
+    }
 
-        return "redirect:/secretariat/paiement";
+    // Page facture détail
+    @GetMapping("/secretariat/paiements/groupe/{reference}/facture")
+    public String factureDetail(@PathVariable String reference, Model model) {
+        List<Paiement> lignes = paiementService.getPaiementsByReference(reference);
+        if (lignes.isEmpty())
+            return "redirect:/secretariat/paiements";
+
+        BigDecimal total = lignes.stream()
+                .map(Paiement::getMontant)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("lignes", lignes);
+        model.addAttribute("reference", reference);
+        model.addAttribute("total", total);
+        model.addAttribute("paiement", lignes.get(0));
+        model.addAttribute("pageTitle", "Facture — " + reference);
+        return "Secretaire/facture_detail";
+    }
+
+    // Export PDF facture groupe
+    @GetMapping("/secretariat/paiements/groupe/{reference}/pdf")
+    public void factureGroupePdf(@PathVariable String reference,
+            HttpServletResponse response) throws Exception {
+        List<Paiement> lignes = paiementService.getPaiementsByReference(reference);
+        BigDecimal total = lignes.stream()
+                .map(Paiement::getMontant)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        byte[] pdf = paiementService.exportFactureGroupePdf(reference, lignes, total);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=facture-" + reference + ".pdf");
+        response.setContentLength(pdf.length);
+        response.getOutputStream().write(pdf);
     }
 
     @GetMapping("/secretariat/paiements")
@@ -81,7 +132,8 @@ public class SecretaireController {
         return "Secretaire/liste_paiements";
     }
 
-    @GetMapping("/secretariat/paiements/{id}/pdf")
+    // Facture PDF par id paiement simple
+    @GetMapping("/secretariat/paiements/simple/{id}/pdf")
     public void factturePdf(@PathVariable Integer id,
             HttpServletResponse response) throws Exception {
         byte[] pdf = paiementService.exportFacturePdf(id);

@@ -10,6 +10,7 @@
 /home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/controller/SecretaireController.java
 /home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/dto/Secretaire/BilanClasseDTO.java
 /home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/dto/Secretaire/BilanGlobalDTO.java
+/home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/dto/Secretaire/PaiementGroupeDTO.java
 /home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/entity/Secretaire/AnneeScolaire.java
 /home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/entity/Secretaire/Classe.java
 /home/tiavina-anjaranomena/PROJET-BAOVOLA/secretariat/src/main/java/com/ecole/entity/Secretaire/Echeance.java
