@@ -1,37 +1,140 @@
 package com.ecole.controller;
 
+import com.ecole.entity.Secretaire.*;
+import com.ecole.service.Secretaire.PaiementService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.ecole.dto.Secretaire.BilanGlobalDTO;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Controller
 public class SecretaireController {
 
+    @Autowired
+    private PaiementService paiementService;
+
+    // ─── PAIEMENT ────────────────────────────────────────────────
+
     @GetMapping("/secretariat/paiement")
     public String paiement(Model model) {
+        List<Inscription> inscriptions = paiementService.getInscriptionsActives();
+        model.addAttribute("inscriptions", inscriptions);
         model.addAttribute("pageTitle", "Ajouter un Paiement");
-        model.addAttribute("currentRole", "secretariat");
         return "Secretaire/paiement";
     }
 
+    // Chargement AJAX des échéances ouvertes quand on sélectionne un élève
+    @GetMapping("/secretariat/paiement/echeances")
+    @ResponseBody
+    public List<Echeance> getEcheances(@RequestParam Integer inscriptionId) {
+        return paiementService.getEcheancesOuvertes(inscriptionId);
+    }
+
+    // Enregistrement du paiement
+    @PostMapping("/secretariat/paiement")
+    public String enregistrerPaiement(
+            @RequestParam Integer inscriptionId,
+            @RequestParam Integer echeanceId,
+            @RequestParam BigDecimal montant,
+            @RequestParam String modePaiement,
+            @RequestParam(required = false) String notes,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            paiementService.enregistrerPaiement(
+                    inscriptionId, echeanceId, montant, modePaiement, notes);
+            redirectAttributes.addFlashAttribute("success", "Paiement enregistré avec succès !");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+        }
+
+        return "redirect:/secretariat/paiement";
+    }
+
+    @GetMapping("/secretariat/paiements")
+    public String listePaiements(
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String classe,
+            @RequestParam(required = false) String modePaiement,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin,
+            Model model) {
+
+        List<Paiement> paiements = paiementService.getPaiementsFiltres(
+                nom, classe, modePaiement, dateDebut, dateFin);
+        model.addAttribute("paiements", paiements);
+        model.addAttribute("nom", nom);
+        model.addAttribute("classe", classe);
+        model.addAttribute("modePaiement", modePaiement);
+        model.addAttribute("dateDebut", dateDebut);
+        model.addAttribute("dateFin", dateFin);
+        model.addAttribute("pageTitle", "Liste des Paiements");
+        return "Secretaire/liste_paiements";
+    }
+
+    @GetMapping("/secretariat/paiements/{id}/pdf")
+    public void factturePdf(@PathVariable Integer id,
+            HttpServletResponse response) throws Exception {
+        byte[] pdf = paiementService.exportFacturePdf(id);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=facture-REC-" + id + ".pdf");
+        response.setContentLength(pdf.length);
+        response.getOutputStream().write(pdf);
+    }
+
+    // ─── BILAN ───────────────────────────────────────────────────
+
     @GetMapping("/secretariat/bilan")
     public String bilan(Model model) {
+        BilanGlobalDTO bilan = paiementService.getBilanGlobal();
+        model.addAttribute("bilan", bilan);
         model.addAttribute("pageTitle", "Bilan de Paiement");
-        model.addAttribute("currentRole", "secretariat");
         return "Secretaire/bilan";
     }
 
+    @GetMapping("/secretariat/bilan/export/pdf")
+    public void exportPdf(HttpServletResponse response) throws Exception {
+        BilanGlobalDTO bilan = paiementService.getBilanGlobal();
+        byte[] pdf = paiementService.exportPdf(bilan);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=bilan_paiements.pdf");
+        response.setContentLength(pdf.length);
+        response.getOutputStream().write(pdf);
+    }
+
+    @GetMapping("/secretariat/bilan/export/excel")
+    public void exportExcel(HttpServletResponse response) throws Exception {
+        BilanGlobalDTO bilan = paiementService.getBilanGlobal();
+        byte[] excel = paiementService.exportExcel(bilan);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=bilan_paiements.xlsx");
+        response.setContentLength(excel.length);
+        response.getOutputStream().write(excel);
+    }
+
+    // ─── ÉLÈVES ──────────────────────────────────────────────────
+
     @GetMapping("/secretariat/eleves")
     public String eleves(Model model) {
+        List<Inscription> inscriptions = paiementService.getInscriptionsActives();
+        model.addAttribute("inscriptions", inscriptions);
         model.addAttribute("pageTitle", "Liste des Élèves");
-        model.addAttribute("currentRole", "secretariat");
         return "Secretaire/eleves";
     }
 
     @GetMapping("/secretariat/profil")
     public String profil(Model model) {
         model.addAttribute("pageTitle", "Profil de l'Élève");
-        model.addAttribute("currentRole", "secretariat");
         return "Secretaire/profil_eleve";
     }
 }
