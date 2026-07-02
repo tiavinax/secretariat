@@ -70,6 +70,8 @@ public class EleveService {
         ProfilEtudiant etudiant = etudiantRepo.findById(etudiantId)
             .orElseThrow(() -> new RuntimeException("Élève introuvable : " + etudiantId));
 
+        log.info("getProfil appelé pour id={} nom={}", etudiantId, etudiant.getNom());
+
         EleveProfilDTO dto = new EleveProfilDTO();
         dto.setId(etudiant.getId());
         dto.setMatricule(etudiant.getMatricule());

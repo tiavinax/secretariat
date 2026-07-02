@@ -22,4 +22,13 @@ public class EleveProfilDTO {
     private String telephoneParent;
     private String lienParente;
     private List<PaiementHistoriqueDTO> historiquesPaiements;
+
+    // Ajouter cette méthode pour les initiales
+    public String getInitiales() {
+        if (prenom == null && nom == null)
+            return "?";
+        String prenomInitial = prenom != null && !prenom.isEmpty() ? prenom.substring(0, 1) : "";
+        String nomInitial = nom != null && !nom.isEmpty() ? nom.substring(0, 1) : "";
+        return (prenomInitial + nomInitial).toUpperCase();
+    }
 }

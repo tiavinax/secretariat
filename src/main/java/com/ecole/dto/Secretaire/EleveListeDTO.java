@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.Map;
 
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 public class EleveListeDTO {
     private Integer id;
@@ -16,4 +17,13 @@ public class EleveListeDTO {
     private String niveau;
     private String photoUrl;
     private Map<Integer, Boolean> paiementsMois;
+
+    // Ajouter cette méthode pour les initiales
+    public String getInitiales() {
+        if (prenom == null && nom == null)
+            return "?";
+        String prenomInitial = prenom != null && !prenom.isEmpty() ? prenom.substring(0, 1) : "";
+        String nomInitial = nom != null && !nom.isEmpty() ? nom.substring(0, 1) : "";
+        return (prenomInitial + nomInitial).toUpperCase();
+    }
 }

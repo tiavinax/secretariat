@@ -9,7 +9,7 @@ VALUES (
     true, NOW(), NOW()
 );
 
-INSERT INTO users (email, password, is_active, created_at, updated_at)
+INSERT INTO users (email, password, is_active, created_at, updatemd_at)
 VALUES (
     'rakoto@ecole.mg',
     '$2a$10$KDkZGCG.UZjj6LSg1DbT6.qQGpCnUaksEvtKlMZvqs1yYG30g944i',

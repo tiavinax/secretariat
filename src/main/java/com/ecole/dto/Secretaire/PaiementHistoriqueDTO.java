@@ -13,4 +13,9 @@ public class PaiementHistoriqueDTO {
     private LocalDate datePaiement;
     private BigDecimal montant;
     private String statut;
+
+    // Ajouter cette méthode
+    public boolean isPaye() {
+        return "Payé".equals(statut);
+    }
 }
