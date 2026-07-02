@@ -54,3 +54,27 @@
   - Affichage détail paiement
   - Bouton "Télécharger PDF"
   - Bouton "Imprimer"
+
+## 💳 Phase Paiement Multi-lignes + Facture
+
+### Étape 1 — Backend
+- [ ] Modifier `Paiement` : ajouter champ `referencePaiement` (groupe plusieurs lignes)
+- [ ] Créer `PaiementGroupeDTO` : `inscriptionId`, `echeanceId`, `lignes[]` (montant + mode)
+- [ ] Modifier `PaiementService.enregistrerPaiement()` : accepter plusieurs lignes,
+      générer une référence groupe `GRP-{date}-{uuid court}`, sauvegarder N paiements
+- [ ] Ajouter `getPaiementsByReference(String ref)` dans `PaiementRepository`
+- [ ] Ajouter `GET /secretariat/paiements/{ref}/facture` → page HTML facture
+- [ ] Modifier `POST /secretariat/paiement` → redirect vers `/secretariat/paiements/{ref}/facture`
+
+### Étape 2 — Vue paiement.html
+- [ ] Remplacer les champs montant + mode par un tableau dynamique
+- [ ] Bouton `+` pour ajouter une ligne (montant + mode)
+- [ ] Bouton `-` pour supprimer une ligne
+- [ ] Total dynamique calculé en JS
+
+### Étape 3 — Vue facture_detail.html
+- [ ] Afficher infos élève + classe + tranche
+- [ ] Tableau des lignes de paiement (montant + mode)
+- [ ] Total payé
+- [ ] Bouton "Exporter PDF" → `/secretariat/paiements/{ref}/pdf`
+- [ ] Bouton "Imprimer" → `window.print()`

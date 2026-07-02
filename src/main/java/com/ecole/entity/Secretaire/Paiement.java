@@ -1,15 +1,14 @@
 package com.ecole.entity.Secretaire;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Getter
-@Setter
+@Getter @Setter
 @Entity
 @Table(name = "paiements")
 public class Paiement {
@@ -38,12 +37,15 @@ public class Paiement {
     @Column(name = "reference_transaction")
     private String referenceTransaction;
 
+    // Référence groupe — relie plusieurs lignes du même paiement
+    @Column(name = "notes")
+    private String notes;
+
+    // On réutilise reference_transaction comme référence groupe
     @ManyToOne
     @JoinColumn(name = "saisi_par")
     @JsonIgnore
     private User saisiPar;
-
-    private String notes;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
